@@ -1307,29 +1307,6 @@
         
         <!-- Summary Tab -->
         <div class="tab-content" id="summary">
-            <div class="stats-bar">
-                <div class="stat-card">
-                    <div class="stat-title">Total Income</div>
-                    <div class="stat-value" id="totalIncome">£0.00</div>
-                    <div class="stat-subtitle">Rental + Other Income</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Total Expenses</div>
-                    <div class="stat-value" id="totalExpenses">£0.00</div>
-                    <div class="stat-subtitle">All costs (excluding HRMC)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Net Profit</div>
-                    <div class="stat-value" id="netProfit">£0.00</div>
-                    <div class="stat-subtitle">Income - Expenses (excluding HRMC)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Total Rows</div>
-                    <div class="stat-value" id="totalRows">0</div>
-                    <div class="stat-subtitle">Data entries</div>
-                </div>
-            </div>
-            
             <div class="sheet-container">
                 <table>
                     <thead>
@@ -2146,11 +2123,6 @@
                     <div class="stat-subtitle">Data records</div>
                 </div>
             `;
-            
-            document.getElementById('totalIncome').textContent = totalIncome > 0 ? `£${totalIncome.toFixed(2)}` : '£0.00';
-            document.getElementById('totalExpenses').textContent = totalExpenses > 0 ? `£${totalExpenses.toFixed(2)}` : '£0.00';
-            document.getElementById('netProfit').textContent = netProfit !== 0 ? `£${netProfit.toFixed(2)}` : '£0.00';
-            document.getElementById('totalRows').textContent = totalRows;
         }
 
         // Render summary tab - UPDATED to show company and description details
