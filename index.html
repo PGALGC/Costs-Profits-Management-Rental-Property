@@ -176,6 +176,14 @@
             background-color: #047857;
         }
         
+        .btn-primary {
+            background-color: #3b82f6;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
         .btn-warning {
             background-color: #d97706;
         }
@@ -1250,8 +1258,14 @@
             <button class="btn btn-outline" id="exportBtn">
                 <i class="fas fa-file-export"></i> Export CSV
             </button>
-            <button class="btn btn-danger" id="clearDataBtn">
-                <i class="fas fa-redo"></i> Clear All
+            <button class="btn btn-success" id="backupBtn">
+                <i class="fas fa-download"></i> Backup JSON
+            </button>
+            <button class="btn btn-primary" id="restoreBtn">
+                <i class="fas fa-upload"></i> Restore JSON
+            </button>
+            <button class="btn btn-danger" id="clearAllBtn">
+                <i class="fas fa-trash"></i> Clear All
             </button>
         </div>
         
@@ -1682,7 +1696,7 @@
         const sortDateBtn = document.getElementById('sortDateBtn');
         const importBtn = document.getElementById('importBtn');
         const exportBtn = document.getElementById('exportBtn');
-        const clearDataBtn = document.getElementById('clearDataBtn');
+        const clearDataBtn = document.getElementById('clearAllBtn');
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
         const addColumnModal = document.getElementById('addColumnModal');
@@ -3039,6 +3053,12 @@
             // Export button (CSV)
             exportBtn.addEventListener('click', exportData);
             
+            // Backup JSON button
+            document.getElementById('backupBtn').addEventListener('click', backupToJSON);
+            
+            // Restore JSON button
+            document.getElementById('restoreBtn').addEventListener('click', restoreFromJSON);
+            
             // Generate Report button
             generateReportBtn.addEventListener('click', generateProfessionalReport);
             
@@ -3193,16 +3213,16 @@
                             const newRow = {
                                 id: nextRowId++,
                                 date: rowData.date || '',
-                                invoice: rowData.invoice || '',
+                                invoice: rowData.invoice_no_ || rowData.invoice || '',
                                 company: rowData.company || '',
                                 description: rowData.description || '',
-                                repairs: rowData.repairs || '',
-                                other: rowData.other || '',
+                                repairs: rowData.repairs___maintenance || rowData.repairs || '',
+                                other: rowData.other_income || rowData.other || '',
                                 insurance: rowData.insurance || '',
                                 keyo: rowData.keyo_estates || rowData.keyo || '',
-                                rent: rowData.rent || '',
-                                kamal: rowData.kamal_hmrc || rowData.kamal || '',
-                                meena: rowData.meena_hmrc || rowData.meena || ''
+                                rent: rowData.rental_income || rowData.rent || '',
+                                kamal: rowData.kamal_hrmc || rowData.kamal || '',
+                                meena: rowData.meena_hrmc || rowData.meena || ''
                             };
                             
                             appData.headers.forEach(header => {
@@ -3219,16 +3239,16 @@
                             const newRow = {
                                 id: nextRowId++,
                                 date: rowData.date || '',
-                                invoice: rowData.invoice || '',
+                                invoice: rowData.invoice_no_ || rowData.invoice || '',
                                 company: rowData.company || '',
                                 description: rowData.description || '',
-                                repairs: rowData.repairs || '',
-                                other: rowData.other || '',
+                                repairs: rowData.repairs___maintenance || rowData.repairs || '',
+                                other: rowData.other_income || rowData.other || '',
                                 insurance: rowData.insurance || '',
                                 keyo: rowData.keyo_estates || rowData.keyo || '',
-                                rent: rowData.rent || '',
-                                kamal: rowData.kamal_hmrc || rowData.kamal || '',
-                                meena: rowData.meena_hmrc || rowData.meena || ''
+                                rent: rowData.rental_income || rowData.rent || '',
+                                kamal: rowData.kamal_hrmc || rowData.kamal || '',
+                                meena: rowData.meena_hrmc || rowData.meena || ''
                             };
                             
                             appData.headers.forEach(header => {
@@ -3506,7 +3526,7 @@
                             csvContent.push('Accountant Details');
                             csvContent.push('Name,' + (person.name || 'Not specified'));
                             csvContent.push('Company,' + (person.companyName || 'Not specified'));
-                            csvContent.push('Address,' + formatAddress(person));
+                            csvContent.push('Address,"' + formatAddress(person) + '"');
                             csvContent.push('Phone,' + (person.phone || 'Not specified'));
                             csvContent.push('Email,' + (person.email || 'Not specified'));
                             if (person.accountNumber) {
@@ -3517,7 +3537,7 @@
                     } else {
                         if (person.name) {
                             csvContent.push(person.name);
-                            csvContent.push('Address,' + formatAddress(person));
+                            csvContent.push('Address,"' + formatAddress(person) + '"');
                             csvContent.push('Phone,' + (person.phone || 'Not specified'));
                             csvContent.push('Email,' + (person.email || 'Not specified'));
                             if (person.nationalInsurance) {
@@ -3545,6 +3565,77 @@
             a.download = `costs-profits-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
             window.URL.revokeObjectURL(url);
+        }
+
+        // Backup all data to JSON
+        function backupToJSON() {
+            const backupData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                appData: appData,
+                personnel: personnel,
+                nextRowId: nextRowId,
+                propertyInfo: propertyInfo
+            };
+            
+            const jsonString = JSON.stringify(backupData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `costs-profits-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Restore all data from JSON
+        function restoreFromJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json,.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const backupData = JSON.parse(event.target.result);
+                        
+                        // Validate backup data structure
+                        if (!backupData.appData || !backupData.personnel || !backupData.propertyInfo) {
+                            alert('Invalid backup file format.');
+                            return;
+                        }
+                        
+                        // Restore data
+                        appData = backupData.appData;
+                        personnel = backupData.personnel;
+                        nextRowId = backupData.nextRowId || 1;
+                        propertyInfo = backupData.propertyInfo;
+                        
+                        // Save to localStorage
+                        autoSave();
+                        
+                        // Refresh UI
+                        renderTable();
+                        renderPersonnel();
+                        renderStatsBar();
+                        renderSummaryTab();
+                        populateColumnPositionOptions();
+                        updatePropertyHeader();
+                        
+                        alert('Data restored successfully!');
+                    } catch (error) {
+                        console.error('Restore error:', error);
+                        alert('Error restoring backup file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
         }
 
         // Load saved theme from localStorage
