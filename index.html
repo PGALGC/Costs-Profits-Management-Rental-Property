@@ -882,13 +882,8 @@
             background-color: white;
             z-index: 2000;
             overflow-y: auto;
-            overflow-x: hidden;
-            padding: 10px;
-        }
-        
-        .report-preview > * {
-            max-width: 100%;
             overflow-x: auto;
+            padding: 10px;
         }
         
         .report-preview.show {
@@ -923,7 +918,7 @@
         }
         
         .report-section {
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             page-break-inside: avoid;
         }
         
@@ -932,14 +927,15 @@
             font-weight: 600;
             color: #1e3a8a;
             border-bottom: 1px solid #1e3a8a;
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            padding-bottom: 3px;
+            margin-bottom: 5px;
         }
         
         .report-table {
             width: 100%;
+            min-width: 1200px;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             font-size: 8px;
             table-layout: fixed;
         }
@@ -967,24 +963,24 @@
             background-color: #f8fafc;
         }
         
-        /* Specific column widths for transaction table */
-        .report-table th:nth-child(1), .report-table td:nth-child(1) { width: 7%; }
+        /* Column widths for 11 columns in preview */
+        .report-table th:nth-child(1), .report-table td:nth-child(1) { width: 6%; }
         .report-table th:nth-child(2), .report-table td:nth-child(2) { width: 7%; }
-        .report-table th:nth-child(3), .report-table td:nth-child(3) { width: 12%; }
-        .report-table th:nth-child(4), .report-table td:nth-child(4) { width: 18%; }
-        .report-table th:nth-child(5), .report-table td:nth-child(5) { width: 8%; }
+        .report-table th:nth-child(3), .report-table td:nth-child(3) { width: 9%; }
+        .report-table th:nth-child(4), .report-table td:nth-child(4) { width: 15%; }
+        .report-table th:nth-child(5), .report-table td:nth-child(5) { width: 10%; }
         .report-table th:nth-child(6), .report-table td:nth-child(6) { width: 8%; }
-        .report-table th:nth-child(7), .report-table td:nth-child(7) { width: 8%; }
-        .report-table th:nth-child(8), .report-table td:nth-child(8) { width: 8%; }
+        .report-table th:nth-child(7), .report-table td:nth-child(7) { width: 9%; }
+        .report-table th:nth-child(8), .report-table td:nth-child(8) { width: 10%; }
         .report-table th:nth-child(9), .report-table td:nth-child(9) { width: 8%; }
-        .report-table th:nth-child(10), .report-table td:nth-child(10) { width: 8%; }
-        .report-table th:nth-child(11), .report-table td:nth-child(11) { width: 8%; }
+        .report-table th:nth-child(10), .report-table td:nth-child(10) { width: 9%; }
+        .report-table th:nth-child(11), .report-table td:nth-child(11) { width: 9%; }
         
         .financial-summary {
             background-color: #f1f5f9;
             border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
         }
         
         .financial-row {
@@ -1157,34 +1153,158 @@
             }
         }
         
-        /* Print styles */
+        /* Print styles - Optimized for PDF with all columns visible */
         @media print {
-            .app-controls, .theme-selector, .actions-cell, .header-actions {
+            @page {
+                size: A4 landscape; /* A4 landscape */
+                margin: 5mm; /* Minimal margins to fit all columns */
+            }
+            
+            html {
+                zoom: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Hide main app, only show report */
+            .modal-overlay.show ~ .container,
+            .container {
                 display: none !important;
             }
             
-            .sheet-container {
-                box-shadow: none;
-                overflow: visible;
+            .modal-overlay {
+                position: static !important;
+                background: transparent !important;
+                display: block !important;
             }
             
-            table {
-                min-width: auto;
-            }
-            
-            td, th {
+            .report-preview.show {
+                display: block !important;
+                position: static !important;
+                max-width: 100% !important;
+                max-height: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
                 overflow: visible !important;
-                white-space: normal !important;
+            }
+            
+            .report-content {
+                padding: 2px !important;
+                max-width: 100% !important;
             }
             
             .report-actions {
                 display: none !important;
             }
             
+            /* Hide Notes for Accountant section in PDF */
+            #notesForAccountant {
+                display: none !important;
+            }
+            
+            /* Compact report sections */
+            .report-header {
+                margin-bottom: 2px !important;
+                padding-bottom: 2px !important;
+            }
+            
+            .report-section {
+                margin-bottom: 3px !important;
+                page-break-inside: avoid;
+            }
+            
+            .report-section-title {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+                padding-bottom: 1px !important;
+            }
+            
+            .financial-summary {
+                padding: 3px !important;
+                margin-bottom: 3px !important;
+            }
+            
+            /* Table styling for PDF */
+            .report-table,
+            table {
+                width: 100% !important;
+                font-size: 6.5px !important;
+                border-collapse: collapse !important;
+                margin-bottom: 2px !important;
+                margin-top: 0 !important;
+                table-layout: fixed !important;
+            }
+            
+            .report-table td,
+            .report-table th,
+            td, th {
+                padding: 1px 2px !important;
+                font-size: 6.5px !important;
+                line-height: 1.1 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            
+            /* Fixed equal-width columns for 11 columns */
+            .report-table th,
+            .report-table td {
+                width: 9.09% !important; /* 100% / 11 columns = 9.09% each */
+            }
+            
+            /* Avoid breaking inside rows */
+            tr {
+                page-break-inside: avoid !important;
+            }
+            
+            /* Keep sections together */
+            h1, h2, h3, h4 {
+                page-break-after: avoid !important;
+                margin-top: 3px !important;
+                margin-bottom: 2px !important;
+                font-size: 11px !important;
+            }
+            
+            /* Compact financial rows */
+            .financial-row {
+                padding: 1px 0 !important;
+                margin-bottom: 0 !important;
+                font-size: 9px !important;
+            }
+            
+            .financial-row.total {
+                margin-top: 2px !important;
+                padding-top: 3px !important;
+                font-size: 10px !important;
+            }
+            
+            /* Personnel section compact */
+            .personnel-details {
+                gap: 3px !important;
+                margin-bottom: 3px !important;
+            }
+            
+            .personnel-card-report {
+                padding: 4px !important;
+            }
+            
+            .personnel-detail {
+                margin-bottom: 1px !important;
+                font-size: 8px !important;
+            }
+            
+            .report-footer {
+                margin-top: 2px !important;
+                padding-top: 1px !important;
+                font-size: 6px !important;
+            }
+            
             body {
                 background-color: white !important;
                 color: black !important;
-                font-size: 12px !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
         }
     </style>
@@ -1462,7 +1582,7 @@
             </div>
         </div>
         
-        <div class="report-section">
+        <div class="report-section" id="notesForAccountant">
             <h2 class="report-section-title">Notes for Accountant</h2>
             <div style="background-color: #f8fafc; border-radius: 6px; padding: 20px; border-left: 4px solid #3b82f6;">
                 <p><strong>Important Notes:</strong></p>
@@ -2683,7 +2803,7 @@
                         <div class="financial-value" style="display: table-cell; text-align: right; width: 30%;">£${totalIncome.toFixed(2)}</div>
                     </div>
                     
-                    <div style="height: 20px;"></div>
+                    <div style="height: 8px;"></div>
                     
                     <div class="financial-row" style="display: table; width: 100%; table-layout: fixed;">
                         <div class="financial-label" style="display: table-cell; text-align: left; width: 70%;">Repairs & Maintenance:</div>
@@ -2702,14 +2822,14 @@
                         <div class="financial-value" style="display: table-cell; text-align: right; width: 30%;">£${totalExpenses.toFixed(2)}</div>
                     </div>
                     
-                    <div style="height: 20px;"></div>
+                    <div style="height: 8px;"></div>
                     
-                    <div class="financial-row total" style="display: table; width: 100%; table-layout: fixed; background-color: ${netProfit >= 0 ? '#d1fae5' : '#fee2e2'}; padding: 12px; border-radius: 4px;">
+                    <div class="financial-row total" style="display: table; width: 100%; table-layout: fixed; background-color: ${netProfit >= 0 ? '#d1fae5' : '#fee2e2'}; padding: 8px; border-radius: 4px;">
                         <div class="financial-label" style="display: table-cell; text-align: left; width: 70%;">Net Profit/Loss (Excl. HRMC):</div>
                         <div class="financial-value ${netProfit >= 0 ? 'profit' : 'loss'}" style="display: table-cell; text-align: right; width: 30%; font-size: 16px;">£${netProfit.toFixed(2)}</div>
                     </div>
                     
-                    <div style="height: 20px;"></div>
+                    <div style="height: 8px;"></div>
                     
                     <div class="financial-row excluded" style="display: table; width: 100%; table-layout: fixed;">
                         <div class="financial-label" style="display: table-cell; text-align: left; width: 70%;">Kamal HRMC (Excluded):</div>
@@ -2728,98 +2848,140 @@
             
             executiveSummary.innerHTML = summaryHtml;
             
-            // Transaction Details
+            // Transaction Details - Show ALL columns including custom ones
             const transactionTable = document.getElementById('reportTransactionTable');
             if (appData.rows.length > 0) {
-                let tableHtml = `
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Invoice No.</th>
-                            <th>Company</th>
-                            <th>Description</th>
-                            <th>Repairs & Maintenance</th>
-                            <th>Other Income</th>
-                            <th>Insurance</th>
-                            <th>Keyo Estates</th>
-                            <th>Rental Income</th>
-                            <th>Kamal HRMC</th>
-                            <th>Meena HRMC</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                `;
+                // Build header row dynamically from all headers except 'actions'
+                let tableHtml = '<thead><tr>';
+                const displayHeaders = appData.headers.filter(h => h.id !== 'actions');
                 
+                displayHeaders.forEach(header => {
+                    // Clean header name - preserve text but remove HTML tags
+                    // Extract text content from HTML (including badge text)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = header.name;
+                    const fullText = tempDiv.textContent.trim();
+                    
+                    // For excluded columns, split the name and "Excluded" on separate lines
+                    if (header.excludedFromCalcs) {
+                        // Remove "Excluded" from the name to put it on a separate line
+                        const cleanName = fullText.replace(/\s*Excluded\s*$/i, '').trim();
+                        tableHtml += `<th>${cleanName}<br><span class="excluded" style="font-size: 0.85em; font-style: italic;">Excluded</span></th>`;
+                    } else {
+                        tableHtml += `<th>${fullText}</th>`;
+                    }
+                });
+                tableHtml += '</tr></thead><tbody>';
+                
+                // Sort rows by date
                 const sortedRows = [...appData.rows].sort((a, b) => {
                     return new Date(a.date || 0) - new Date(b.date || 0);
                 });
                 
+                // Build data rows
                 sortedRows.forEach(row => {
-                    tableHtml += `
-                        <tr>
-                            <td>${row.date || ''}</td>
-                            <td>${row.invoice || ''}</td>
-                            <td>${row.company || ''}</td>
-                            <td>${row.description || ''}</td>
-                            <td>${row.repairs ? '£' + parseFloat(row.repairs).toFixed(2) : ''}</td>
-                            <td>${row.other ? '£' + parseFloat(row.other).toFixed(2) : ''}</td>
-                            <td>${row.insurance ? '£' + parseFloat(row.insurance).toFixed(2) : ''}</td>
-                            <td>${row.keyo ? '£' + parseFloat(row.keyo).toFixed(2) : ''}</td>
-                            <td>${row.rent ? '£' + parseFloat(row.rent).toFixed(2) : ''}</td>
-                            <td class="excluded">${row.kamal ? '£' + parseFloat(row.kamal).toFixed(2) : ''}</td>
-                            <td class="excluded">${row.meena ? '£' + parseFloat(row.meena).toFixed(2) : ''}</td>
-                        </tr>
-                    `;
+                    tableHtml += '<tr>';
+                    
+                    displayHeaders.forEach(header => {
+                        const value = row[header.id] || '';
+                        let displayValue = '';
+                        
+                        // Format currency columns
+                        if (header.type === 'currency' && value) {
+                            displayValue = '£' + parseFloat(value).toFixed(2);
+                            // Add excluded styling for HRMC columns
+                            if (header.excludedFromCalcs) {
+                                tableHtml += `<td class="excluded">${displayValue}</td>`;
+                            } else {
+                                tableHtml += `<td>${displayValue}</td>`;
+                            }
+                        } else {
+                            tableHtml += `<td>${value}</td>`;
+                        }
+                    });
+                    
+                    tableHtml += '</tr>';
                 });
                 
                 // Add totals row
-                tableHtml += `
-                    <tr style="background-color: #f1f5f9; font-weight: 600;">
-                        <td colspan="4" style="text-align: right;">TOTALS:</td>
-                        <td>£${totalRepairs.toFixed(2)}</td>
-                        <td>£${totalOther.toFixed(2)}</td>
-                        <td>£${totalInsurance.toFixed(2)}</td>
-                        <td>£${totalKeyo.toFixed(2)}</td>
-                        <td>£${totalRent.toFixed(2)}</td>
-                        <td class="excluded">£${totalKamal.toFixed(2)}</td>
-                        <td class="excluded">£${totalMeena.toFixed(2)}</td>
-                    </tr>
-                `;
+                tableHtml += '<tr style="background-color: #f1f5f9; font-weight: 600;">';
                 
-                tableHtml += '</tbody>';
+                displayHeaders.forEach((header, index) => {
+                    if (index === 0) {
+                        // First column shows "TOTALS:" label
+                        const nonCurrencyCols = displayHeaders.filter(h => h.type !== 'currency').length;
+                        tableHtml += `<td colspan="${nonCurrencyCols}" style="text-align: right;">TOTALS:</td>`;
+                        // Skip the rest of non-currency columns
+                        return;
+                    }
+                    
+                    // Only show totals for currency columns
+                    if (header.type === 'currency') {
+                        const total = parseFloat(calculateColumnTotal(header.id)) || 0;
+                        const displayTotal = '£' + total.toFixed(2);
+                        
+                        if (header.excludedFromCalcs) {
+                            tableHtml += `<td class="excluded">${displayTotal}</td>`;
+                        } else {
+                            tableHtml += `<td>${displayTotal}</td>`;
+                        }
+                    } else if (index >= displayHeaders.filter(h => h.type !== 'currency').length) {
+                        // Skip non-currency columns already covered by colspan
+                    }
+                });
+                
+                tableHtml += '</tr></tbody>';
                 transactionTable.innerHTML = tableHtml;
             } else {
+                const colCount = appData.headers.filter(h => h.id !== 'actions').length;
                 transactionTable.innerHTML = `
                     <tr>
-                        <td colspan="11" style="text-align: center; padding: 40px; color: #666; font-style: italic;">
+                        <td colspan="${colCount}" style="text-align: center; padding: 40px; color: #666; font-style: italic;">
                             No transaction data available for this period.
                         </td>
                     </tr>
                 `;
             }
             
-            // Personnel Details
+            // Personnel Details - Show ALL fields from Personnel tab
             const reportPersonnel = document.getElementById('reportPersonnel');
             let personnelHtml = '';
             
             if (hasPersonnelData()) {
                 personnel.forEach(person => {
                     if (person.id === 3) {
+                        // Accountant card
                         if (person.name || person.companyName) {
                             personnelHtml += `
                                 <div class="personnel-card-report">
                                     <h4>Accountant Details</h4>
                                     <div class="personnel-detail">
-                                        <div class="personnel-label">Name:</div>
+                                        <div class="personnel-label">Accountant Name:</div>
                                         <div class="personnel-value">${person.name || 'Not specified'}</div>
                                     </div>
                                     <div class="personnel-detail">
-                                        <div class="personnel-label">Company:</div>
+                                        <div class="personnel-label">Company Name:</div>
                                         <div class="personnel-value">${person.companyName || 'Not specified'}</div>
                                     </div>
                                     <div class="personnel-detail">
-                                        <div class="personnel-label">Address:</div>
-                                        <div class="personnel-value">${formatAddress(person)}</div>
+                                        <div class="personnel-label">Address Line 1:</div>
+                                        <div class="personnel-value">${person.address1 || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Address Line 2:</div>
+                                        <div class="personnel-value">${person.address2 || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Town/City:</div>
+                                        <div class="personnel-value">${person.town || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">County:</div>
+                                        <div class="personnel-value">${person.county || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Postcode:</div>
+                                        <div class="personnel-value">${person.postcode || 'Not specified'}</div>
                                     </div>
                                     <div class="personnel-detail">
                                         <div class="personnel-label">Phone:</div>
@@ -2829,23 +2991,42 @@
                                         <div class="personnel-label">Email:</div>
                                         <div class="personnel-value">${person.email || 'Not specified'}</div>
                                     </div>
-                                    ${person.accountNumber ? `
-                                        <div class="personnel-detail">
-                                            <div class="personnel-label">Account No:</div>
-                                            <div class="personnel-value">${person.accountNumber}</div>
-                                        </div>
-                                    ` : ''}
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Account Number:</div>
+                                        <div class="personnel-value">${person.accountNumber || 'Not specified'}</div>
+                                    </div>
                                 </div>
                             `;
                         }
                     } else {
+                        // Personnel cards (Person 1 & 2)
                         if (person.name) {
                             personnelHtml += `
                                 <div class="personnel-card-report">
                                     <h4>${person.name}</h4>
                                     <div class="personnel-detail">
-                                        <div class="personnel-label">Address:</div>
-                                        <div class="personnel-value">${formatAddress(person)}</div>
+                                        <div class="personnel-label">Date of Birth:</div>
+                                        <div class="personnel-value">${person.dob ? formatDate(person.dob) : 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Address Line 1:</div>
+                                        <div class="personnel-value">${person.address1 || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Address Line 2:</div>
+                                        <div class="personnel-value">${person.address2 || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Town/City:</div>
+                                        <div class="personnel-value">${person.town || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">County:</div>
+                                        <div class="personnel-value">${person.county || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">Postcode:</div>
+                                        <div class="personnel-value">${person.postcode || 'Not specified'}</div>
                                     </div>
                                     <div class="personnel-detail">
                                         <div class="personnel-label">Phone:</div>
@@ -2855,18 +3036,14 @@
                                         <div class="personnel-label">Email:</div>
                                         <div class="personnel-value">${person.email || 'Not specified'}</div>
                                     </div>
-                                    ${person.nationalInsurance ? `
-                                        <div class="personnel-detail">
-                                            <div class="personnel-label">National Insurance:</div>
-                                            <div class="personnel-value">${person.nationalInsurance}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${person.utr ? `
-                                        <div class="personnel-detail">
-                                            <div class="personnel-label">UTR:</div>
-                                            <div class="personnel-value">${person.utr}</div>
-                                        </div>
-                                    ` : ''}
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">National Insurance No:</div>
+                                        <div class="personnel-value">${person.nationalInsurance || 'Not specified'}</div>
+                                    </div>
+                                    <div class="personnel-detail">
+                                        <div class="personnel-label">UTR (Tax Reference):</div>
+                                        <div class="personnel-value">${person.utr || 'Not specified'}</div>
+                                    </div>
                                 </div>
                             `;
                         }
@@ -2897,6 +3074,21 @@
             if (person.postcode) parts.push(person.postcode);
             
             return parts.length > 0 ? parts.join(', ') : 'Not specified';
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Not specified';
+            
+            // If date is in YYYY-MM-DD format, convert to DD/MM/YYYY
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // Return as-is if invalid
+            
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            
+            return `${day}/${month}/${year}`;
         }
 
         // Check if personnel data exists
