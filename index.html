@@ -3144,22 +3144,44 @@
                         return;
                     }
                     
-                    const headers = rows[0].split(',').map(h => h.trim());
+                    // Find the TRANSACTION DETAILS section
+                    let headerRowIndex = -1;
+                    for (let i = 0; i < rows.length; i++) {
+                        if (rows[i].includes('Date,Invoice No.,Company,Description')) {
+                            headerRowIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    // If formatted export not found, try simple CSV format
+                    if (headerRowIndex === -1) {
+                        headerRowIndex = 0;
+                    }
+                    
+                    const headers = parseCSVRow(rows[headerRowIndex]);
                     const importedRows = [];
                     
-                    for (let i = 1; i < rows.length; i++) {
+                    for (let i = headerRowIndex + 1; i < rows.length; i++) {
                         const rowData = parseCSVRow(rows[i]);
-                        if (rowData.length === headers.length) {
+                        
+                        // Skip if this is a TOTALS row or section header
+                        if (rowData[0] && (rowData[0].includes('TOTALS') || rowData[0].includes('PERSONNEL') || rowData[0] === '')) {
+                            break;
+                        }
+                        
+                        if (rowData.length === headers.length && rowData[0]) {
                             const rowObj = {};
                             headers.forEach((header, index) => {
-                                rowObj[header.toLowerCase().replace(/[^a-z0-9]/g, '_')] = rowData[index] || '';
+                                const cleanHeader = header.replace(/£/g, '').trim();
+                                const value = rowData[index] ? rowData[index].replace(/£/g, '').trim() : '';
+                                rowObj[cleanHeader.toLowerCase().replace(/[^a-z0-9]/g, '_')] = value;
                             });
                             importedRows.push(rowObj);
                         }
                     }
                     
                     if (importedRows.length === 0) {
-                        alert('No valid data found in CSV file.');
+                        alert('No valid transaction data found in CSV file.');
                         return;
                     }
                     
