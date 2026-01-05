@@ -2166,6 +2166,7 @@
             // INCOME SECTION - Show rows with rental income
             html += `<tr><td colspan="4" style="background-color: var(--header-bg); font-weight: 600; padding: 6px;">RENTAL INCOME</td></tr>`;
             const rentalRows = appData.rows.filter(row => parseFloat(row.rent) > 0);
+            const totalRentalIncome = parseFloat(calculateColumnTotal('rent'));
             if (rentalRows.length > 0) {
                 rentalRows.forEach(row => {
                     html += `
@@ -2177,6 +2178,12 @@
                         </tr>
                     `;
                 });
+                html += `
+                    <tr style="background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);">
+                        <td colspan="3" style="font-weight: 600; padding: 6px; font-size: 10px;">Total Rental Income</td>
+                        <td style="font-weight: 600; padding: 6px; font-size: 10px;">£${totalRentalIncome.toFixed(2)}</td>
+                    </tr>
+                `;
             } else {
                 html += `<tr><td colspan="4" style="text-align: center; color: var(--secondary-color); padding: 6px; font-size: 10px;">No rental income</td></tr>`;
             }
@@ -2184,6 +2191,7 @@
             // OTHER INCOME SECTION
             html += `<tr><td colspan="4" style="background-color: var(--header-bg); font-weight: 600; padding: 6px;">OTHER INCOME</td></tr>`;
             const otherIncomeRows = appData.rows.filter(row => parseFloat(row.other) > 0);
+            const totalOtherIncome = parseFloat(calculateColumnTotal('other'));
             if (otherIncomeRows.length > 0) {
                 otherIncomeRows.forEach(row => {
                     html += `
@@ -2195,6 +2203,12 @@
                         </tr>
                     `;
                 });
+                html += `
+                    <tr style="background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);">
+                        <td colspan="3" style="font-weight: 600; padding: 6px; font-size: 10px;">Total Other Income</td>
+                        <td style="font-weight: 600; padding: 6px; font-size: 10px;">£${totalOtherIncome.toFixed(2)}</td>
+                    </tr>
+                `;
             } else {
                 html += `<tr><td colspan="4" style="text-align: center; color: var(--secondary-color); padding: 6px; font-size: 10px;">No other income</td></tr>`;
             }
@@ -2218,6 +2232,12 @@
                         `;
                     }
                 });
+                html += `
+                    <tr style="background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);">
+                        <td colspan="3" style="font-weight: 600; padding: 6px; font-size: 10px;">Total Expenses</td>
+                        <td style="font-weight: 600; padding: 6px; font-size: 10px;">£${totalExpenses.toFixed(2)}</td>
+                    </tr>
+                `;
             } else {
                 html += `<tr><td colspan="4" style="text-align: center; color: var(--secondary-color); padding: 6px; font-size: 10px;">No expenses</td></tr>`;
             }
@@ -2226,6 +2246,7 @@
             html += `<tr><td colspan="4" style="background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); font-weight: 600; padding: 6px; color: var(--accent-color);">HRMC PAYMENTS (Excluded from Calculations)</td></tr>`;
             const kamalRows = appData.rows.filter(row => parseFloat(row.kamal) > 0);
             const meenaRows = appData.rows.filter(row => parseFloat(row.meena) > 0);
+            const totalHRMC = parseFloat(calculateColumnTotal('kamal')) + parseFloat(calculateColumnTotal('meena'));
             
             if (kamalRows.length > 0 || meenaRows.length > 0) {
                 kamalRows.forEach(row => {
@@ -2248,12 +2269,17 @@
                         </tr>
                     `;
                 });
+                html += `
+                    <tr style="background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);">
+                        <td colspan="3" style="font-weight: 600; padding: 6px; font-size: 10px; color: var(--accent-color);">Total HRMC Payments</td>
+                        <td style="font-weight: 600; padding: 6px; font-size: 10px; color: var(--accent-color);">£${totalHRMC.toFixed(2)}</td>
+                    </tr>
+                `;
             } else {
                 html += `<tr><td colspan="4" style="text-align: center; color: var(--secondary-color); padding: 6px; font-size: 10px;">No HRMC payments</td></tr>`;
             }
             
             // TOTALS SECTION
-            const totalHRMC = parseFloat(calculateColumnTotal('kamal')) + parseFloat(calculateColumnTotal('meena'));
             html += `<tr><td colspan="4" style="border-top: 2px solid var(--border-color);"></td></tr>`;
             html += `
                 <tr class="summary-row">
